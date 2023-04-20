@@ -12,7 +12,82 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
     }
     
     @AuraEnabled
-    public static string createProject(Opportunity opp, String projectName, String account, List<String> recordTypeList){
+    public static string createProjectBatch(Opportunity opp, String projectName, String account, List<String> recordTypeList){
+        System.debug('opp '+opp);
+        System.debug('projectName '+projectName);
+        System.debug('account '+account);
+        System.debug('recordTypeList '+recordTypeList);
+
+
+        String recordId = opp.Id;
+
+        List<Id> quoteIdsList = new List<Id>();
+
+        list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Org_Base_URL__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Quote Configuration' limit 1]; 
+
+        List<buildertek__Quote__c> quoteList;
+        quoteList = [SELECT Id, Name FROM buildertek__Quote__c WHERE buildertek__Opportunity__c =: recordId AND (buildertek__Status__c = 'Approved' OR buildertek__Status__c = 'Customer Accepted')];
+
+        Set<Id> contentDocumentIds1 = new Set<Id>();
+        for(ContentDocumentLink conDoc : [SELECT ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId =: recordId]){
+            contentDocumentIds1.add(conDoc.ContentDocumentId);
+        }
+        List<ContentNote> contentNoteslist = new List<ContentNote>();
+        List<ContentNote> contentNotes = [SELECT Id, Title, TextPreview, Content FROM ContentNote WHERE Id In: contentDocumentIds1];
+        String[] tmp  = New String[]{};
+        string textpreview = '';
+        String TextPreview1;
+        for(ContentNote c : contentNotes){
+            tmp.add(c.Title + ' : ' + c.TextPreview);
+        }
+        TextPreview1 = string.join(tmp,'\n\n');
+
+        List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
+        for (String recordType : recordTypeList) {
+            buildertek__Project__c project = new buildertek__Project__c();
+            project.Name = projectName;
+            if(account != null){
+                project.buildertek__Account__c = account;
+            }
+            project.buildertek__Opportunity__c =  recordId;
+            project.buildertek__State__c = opp.Account.Billingstate;
+            project.buildertek__Address__c = opp.Account.Billingstreet;
+            project.buildertek__Zip__c = opp.Account.Billingpostalcode;
+            project.buildertek__City__c = opp.Account.Billingcity;
+            if(TextPreview1 != null){
+                project.buildertek__Notes__c = TextPreview1; 
+            }
+            if(account != null){
+                project.buildertek__Customer__c = account;
+            }
+            project.OwnerId = opp.OwnerId;
+            if(adminInterfaceNodeConfigurations[0].buildertek__Org_Base_URL__c != null && quoteList.size() > 0){
+                project.buildertek__Pictures__c = adminInterfaceNodeConfigurations[0].buildertek__Org_Base_URL__c+'/lightning/r/buildertek__Quote__c/'+quoteList[0].Id+'/related/AttachedContentDocuments/view';
+            }
+
+            Id projectRecordTypeId = Schema.SObjectType.buildertek__Project__c.getRecordTypeInfosByName().get(recordType).getRecordTypeId();
+            project.RecordTypeId = projectRecordTypeId;
+
+            projectList.add(project);
+        }
+        
+        insert projectList;
+
+        // *calling my batch here
+        ProjectOnOpportunityBatch batchClass = new ProjectOnOpportunityBatch(opp, projectList);
+
+        // set the size of the batch to execute
+        Integer batchSize = 1;
+
+        // start the batch by calling Database.executeBatch
+        Database.executeBatch(batchClass, batchSize);
+        
+        return 'success';
+    }   
+
+
+    @AuraEnabled
+    public static string createProject(Opportunity opp, buildertek__Project__c project){
         String recordId = opp.Id;
 
         List<Id> quoteIdsList = new List<Id>();
@@ -38,34 +113,7 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
         }
         List<ContentNote> contentNoteslist = new List<ContentNote>();
         List<ContentNote> contentNotes = [SELECT Id, Title, TextPreview, Content FROM ContentNote WHERE Id In: contentDocumentIds1];
-        String[] tmp  = New String[]{};
         string textpreview = '';
-        String TextPreview1;
-        for(ContentNote c : contentNotes){
-            tmp.add(c.Title + ' : ' + c.TextPreview);
-        }
-        TextPreview1 = string.join(tmp,'\n\n');
-        buildertek__Project__c project = new buildertek__Project__c();
-        project.Name = projectName;
-        if(account != null){
-            project.buildertek__Account__c = account;
-        }
-        project.buildertek__Opportunity__c =  recordId;
-        project.buildertek__State__c = opp.Account.Billingstate;
-        project.buildertek__Address__c = opp.Account.Billingstreet;
-        project.buildertek__Zip__c = opp.Account.Billingpostalcode;
-        project.buildertek__City__c = opp.Account.Billingcity;
-        if(TextPreview1 != null){
-            project.buildertek__Notes__c = TextPreview1; 
-        }
-        if(account != null){
-            project.buildertek__Customer__c = account;
-        }
-        project.OwnerId = opp.OwnerId;
-        if(adminInterfaceNodeConfigurations[0].buildertek__Org_Base_URL__c != null && quoteList.size() > 0){
-           project.buildertek__Pictures__c = adminInterfaceNodeConfigurations[0].buildertek__Org_Base_URL__c+'/lightning/r/buildertek__Quote__c/'+quoteList[0].Id+'/related/AttachedContentDocuments/view';
-        }
-        insert project;
 
         for(ContentNote c : contentNotes){
             textpreview = c.TextPreview;
@@ -283,7 +331,7 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
         List<buildertek__Budget__c> newBudgets = createBudgetFromQuote(createdContractCustomerToAccess);
         
         return project.Id;
-    }   
+    }
 
     public static List<buildertek__Contract__c> createContractsFromQuote(List<Id> listQuoteIds, List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations) {
         List<Id> quoteIdsList = new List<Id>(); 
@@ -687,5 +735,6 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
         return quoteItemList;
               
     }
+
 
 }

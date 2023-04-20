@@ -87,7 +87,7 @@
                     helper.showToast("Error", "Error", "Something Went Wrong", "5000");
                 }
             });
-            // $A.enqueueAction(action);
+            $A.enqueueAction(action);
         }
         
     },
