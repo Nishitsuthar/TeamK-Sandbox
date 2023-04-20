@@ -1,0 +1,58 @@
+<apex:page standardController="Account">
+
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> 
+<script type="text/javascript"> 
+
+$(document).ready(function() {
+
+    var mapOptions = {
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: false,
+        center: {lat: {!Account.BillingLatitude}, lng: {!Account.BillingLongitude}}
+    };
+    map = new google.maps.Map(document.getElementById('map'),
+        mapOptions);
+
+    var marker = new google.maps.Marker({
+        position: {lat: {!Account.BillingLatitude},lng: {!Account.BillingLongitude}},
+        map: map
+    });
+    var infowindowtext = "<b>{Name}</b><br>{Project_Address__c}<br>{Project_City__c}, {Project_Zip__c)}";
+    infowindowtext = infowindowtext.replace(/(\r\n|\n|\r)/gm,"");             
+
+    var infowindow = new google.maps.InfoWindow({
+        content: infowindowtext
+    });
+
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map, marker);
+    });
+
+    function resizeIframe() {
+        var me = window.name;
+        if (me) {
+            var iframes = parent.document.getElementsByName(me);
+            if (iframes && iframes.length == 1) {
+                height = document.body.offsetHeight;
+                iframes[0].style.height = height + "px";
+            }
+        }
+    }
+
+});
+</script>
+
+<style>
+#map {
+  font-family: Arial;
+  font-size:12px;
+  line-height:normal !important;
+  height:250px;
+  background:transparent;
+}
+</style>
+
+<div id="map">Hello</div> 
+</apex:page>
