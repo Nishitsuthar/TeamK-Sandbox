@@ -1,7 +1,7 @@
 public with sharing class TeamK_CreateProjectFromOpportunity {
     @AuraEnabled
     public static Opportunity getOpportunity(String recordId){
-        Opportunity opp = [SELECT Id, Name, Type, AccountId, Account.Name, Account.Billingstate, Account.Billingstreet, Account.Billingpostalcode, Account.Billingcity, buildertek__Notes__c, OwnerId FROM Opportunity WHERE Id =: recordId]; 
+        Opportunity opp = [SELECT Id, Name, Type, AccountId, Property_Type__c, Account.Name, Account.Billingstate, Account.Billingstreet, Account.Billingpostalcode, Account.Billingcity, buildertek__Notes__c, OwnerId FROM Opportunity WHERE Id =: recordId]; 
         return opp;
     }
 
@@ -45,7 +45,13 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
         List<buildertek__Project__c> projectList = new List<buildertek__Project__c>();
         for (String recordType : recordTypeList) {
             buildertek__Project__c project = new buildertek__Project__c();
-            project.Name = projectName;
+            
+            if(projectName != null){
+                project.Name = projectName;
+            }
+            else
+                project.Name = opp.Name;
+                 
             if(account != null){
                 project.buildertek__Account__c = account;
             }
@@ -65,13 +71,13 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
                 project.buildertek__Pictures__c = adminInterfaceNodeConfigurations[0].buildertek__Org_Base_URL__c+'/lightning/r/buildertek__Quote__c/'+quoteList[0].Id+'/related/AttachedContentDocuments/view';
             }
 
-            Id projectRecordTypeId = Schema.SObjectType.buildertek__Project__c.getRecordTypeInfosByName().get(recordType).getRecordTypeId();
-            project.RecordTypeId = projectRecordTypeId;
+            project.RecordTypeId = recordType;
 
             projectList.add(project);
         }
         
         insert projectList;
+        System.debug('projectList ==>'+projectList);
 
         // *calling my batch here
         ProjectOnOpportunityBatch batchClass = new ProjectOnOpportunityBatch(opp, projectList);
@@ -88,6 +94,10 @@ public with sharing class TeamK_CreateProjectFromOpportunity {
 
     @AuraEnabled
     public static string createProject(Opportunity opp, buildertek__Project__c project){
+
+        System.debug('opp ==> '+opp);
+        System.debug('project ==> '+project);
+
         String recordId = opp.Id;
 
         List<Id> quoteIdsList = new List<Id>();

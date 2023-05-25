@@ -1,0 +1,17 @@
+<apex:page controller="RFQAcceptedDemo" showheader="false" id="pageId" action="{!updateRFQ}">
+    <apex:slds />
+    <script>
+    // alert("ok")
+    function closeWindow() {
+        self.close();
+    }
+  
+    </script>
+    <div style='text-align: center;padding:20px;font-size:20px;'> 
+        {!rfqMessage}
+    </div>
+   
+    <div style='text-align: center;padding:20px;font-size:20px;'>
+        <button type="button" class="slds-button slds-button_neutral" onclick="closeWindow();">Close</button>
+    </div>
+</apex:page>

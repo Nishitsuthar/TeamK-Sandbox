@@ -61,8 +61,8 @@
             component.set("v.Spinner", true);
             var project = component.find("projectNameId").get("v.value");
             var accountId = component.find("accountId").get("v.value");
-
-            var action = component.get("c.createProject");
+            debugger;
+            var action = component.get("c.createProjectBatch");
             action.setParams({
                 opp : component.get("v.OpportunityData"),
                 projectName : project,
@@ -70,22 +70,16 @@
                 recordTypeList : CheckBoxValue
             });
             action.setCallback(this, function(response){
+                debugger
                 var state = response.getState();
+                console.log('state ',state);
                 if(state === "SUCCESS"){
-                    let result = response.getReturnValue();
-                    helper.closeModel(component, event, helper);
                     helper.showToast("Success", "Success", "Project Created successfully", "5000");
-                    var navEvt = $A.get("e.force:navigateToSObject");
-                        navEvt.setParams({
-                            "recordId": result,
-                            "slideDevName": "related"
-                        });
-                    navEvt.fire();
-                    $A.get('e.force:refreshView').fire();
                 }else{
-                    helper.closeModel(component, event, helper);
+                    console.log('Error ==> ',response.getError());
                     helper.showToast("Error", "Error", "Something Went Wrong", "5000");
                 }
+                helper.closeModel(component, event, helper)
             });
             $A.enqueueAction(action);
         }

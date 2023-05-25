@@ -1,45 +1,23 @@
 public class testcontroller {
 
     public string teststring {get;set;}
-    
+
     public testcontroller(){
-        /*if (
-    Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Id.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Name.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Contact__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Status__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Quote_Amount__c.isAccessible() && 
+        /* String query = 'Select RFQ__r.Due_Date__c,RFQ__r.Name,RFQ__r.RFQ_Details__c,RFQ__r.Auto_Number__c,RFQ__r.Project__c,buildertek__RFQ__r.Project__r.Name,' + BT_Utils.getQueryStringForObjectWithAllFields('buildertek__RFQ_To_Vendor__c')+',(Select id,Name,Item_Name__c,Vendor_Note__c,buildertek__Estimated_Work_Days__c,Quantity__c,Unit_Price__c,Total_Price__c,Description__c,Budget_Line_Amount__c, buildertek__RFQ_Item__c from Vendor_Items__r),(Select Id, Name, File__r.Name, File__r.File_Presigned_URL__c,File__r.Description__c,File__r.Download_Link__c,File__r.Download_Link1__c from RFQ_To_Vendor_Document_Links__r), (Select Id, Name, File_Presigned_URL__c,Description__c from Files__r) From buildertek__RFQ_To_Vendor__c where ID =:rfqVendorId order by Name'; */
 
-    Schema.sObjectType.buildertek__RFQ__c.fields.Id.isAccessible() &&
-    Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Vendor__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Status__c.isAccessible() && 
-
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.Id.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.Name.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Item_Name__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Quantity__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Unit_Price__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Total_Price__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Description__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Budget_Line_Amount__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Vendor_Note__c.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Estimated_Work_Days__c.isAccessible() && 
-
-    Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.Id.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.Name.isAccessible() && 
-    Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.buildertek__File__c.isAccessible() &&
-    
-    Schema.sObjectType.buildertek__File__c.fields.Id.isAccessible() && 
-    Schema.sObjectType.buildertek__File__c.fields.Name.isAccessible() && 
-    Schema.sObjectType.buildertek__File__c.fields.buildertek__File_Presigned_URL__c.isAccessible() && 
-    Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link__c.isAccessible() && 
-            Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link1__c.isAccessible()){
+        if (Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Contact__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Status__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Quote_Amount__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Vendor__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Status__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Item_Name__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Quantity__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Unit_Price__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Total_Price__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Description__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Budget_Line_Amount__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Vendor_Note__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Estimated_Work_Days__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.buildertek__File__c.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.buildertek__File_Presigned_URL__c.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link__c.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link1__c.isAccessible()){
+            teststring = 'wrong';
+        }else{
+            teststring = 'right';
+        }}
+        /* if (
+    Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Contact__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Status__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Quote_Amount__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Vendor__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Status__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Item_Name__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Quantity__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Unit_Price__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Total_Price__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Description__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Budget_Line_Amount__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Vendor_Note__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Vendor_Item__c.fields.buildertek__Estimated_Work_Days__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor_Document_Link__c.fields.buildertek__File__c.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.buildertek__File_Presigned_URL__c.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link__c.isAccessible() && Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link1__c.isAccessible()){
                 teststring = 'wrong';
-                
+
             }else{
                 teststring = 'right';
-            }*/
-            teststring='';
+            }} */
+            /* teststring='';
     if(Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Id.isAccessible()  ){teststring += ' -- buildertek__RFQ_To_Vendor__c.fields.Id';}
     if(Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.Name.isAccessible()  ){teststring += ' -- buildertek__RFQ_To_Vendor__c.fields.Name';}
     if(Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Contact__c.isAccessible()  ){teststring += ' -- buildertek__RFQ_To_Vendor__c.fields.buildertek__Contact__c';}
@@ -66,5 +44,5 @@ public class testcontroller {
     if(Schema.sObjectType.buildertek__File__c.fields.buildertek__File_Presigned_URL__c.isAccessible()  ){teststring += ' -- buildertek__File__c.fields.buildertek__File_Presigned_URL__c';}
     if(Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link__c.isAccessible()  ){teststring += ' -- buildertek__File__c.fields.buildertek__Download_Link__c';}
     if(Schema.sObjectType.buildertek__File__c.fields.buildertek__Download_Link1__c.isAccessible()){teststring += ' -- buildertek__File__c.fields.buildertek__Download_Link1__c';}
-    }
+    } */
 }
