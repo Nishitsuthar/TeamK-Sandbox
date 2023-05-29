@@ -6,7 +6,6 @@ Developed By: Sagar
 Date:  13-Jul-2018
 */
 public without sharing class RFQResponseControllerDemo{
-
     public static String OBJECT_TYPE_ACCOUNT = Account.sObjectType+'';
     public static String OBJECT_TYPE_FILE = buildertek__File__c.sObjectType+'';
     public static String OBJECT_TYPE_FOLDER = buildertek__Folder__c.sObjectType+'';
@@ -75,6 +74,15 @@ public without sharing class RFQResponseControllerDemo{
     set;
     }
 
+    public boolean displayPopup {get;set;} 
+    public void closePopup() 
+    {
+        displayPopup = false; 
+    } 
+    public void showPopup() 
+    {
+        displayPopup = true; 
+    } 
 
 
 public Boolean displayPopup1 {get;set;}
@@ -125,8 +133,6 @@ public Boolean displayPopup1 {get;set;}
     public List<WrapperVerdorLineList> wrapList{ get; set; }
 
     public Integer rowToRemove{ get; set; }
-
-    public Boolean displayPopUp{ get; set; }
 
     public string selectedBucket{ get; set; }
 
@@ -454,14 +460,6 @@ public Boolean displayPopup1 {get;set;}
         public buildertek__RFQ_Vendor_Item__c record{ get; set; }
     }
 
-    public void openPopup(){
-        displayPopUp = true;
-    }
-
-    public void closePopup(){
-        displayPopUp = false;
-    }
-
     public void gets3Key(){
 
     }
@@ -635,30 +633,6 @@ File object that is used to pass file detail from page to controller.
 
     }
 
-
-
-    public void showPopup()
-    {
-
-    displayPopup1 = true;
-
-
-    }
-
-    public void closePopup1() {
-        displayPopup1 = false;
-
-    }
-
-    public void redirectPopup()
-    {
-    displayPopup1 = false;
-        //Please uncomment below 3 statements and replace YourObjectId
-       // PageReference p=new Pagereference('/'+YourObjectId);
-       //  p.setRedirect(true);
-       //  return p;
-
-    }
 
     public void createRFI(){
         try{

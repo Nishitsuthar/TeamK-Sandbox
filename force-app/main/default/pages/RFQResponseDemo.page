@@ -1,4 +1,4 @@
-<apex:page cache="false" controller="RFQResponseControllerDemo" showheader="false" id="pageId">
+<apex:page controller="RFQResponseControllerDemo" showheader="false" id="pageId">
     <apex:slds />
     <apex:includeLightning />
     <c:importaJQ importJquery="true" importAppurinUtil="true" importJQueryLayout="true" importFancyTree="false"
@@ -102,6 +102,19 @@
         .customPopup .close:hover {
             color: red;
         }
+
+        .custom-loading-text {
+            transform: rotate(-90deg);
+            position: absolute;
+            top: -0.5rem;
+            left: 1rem;
+            white-space: nowrap;
+            font-size: 20px;
+        }
+
+        .slds-spinner_container{
+            position: fixed !important;
+        }
     </style>
     <script>
 
@@ -114,6 +127,7 @@
             file_name.value = file.name.substring(fileNameIndex + 1);
 
         }
+
 
         var client = new forcetk.Client();
         client.setSessionToken('{!$Api.Session_ID}');
@@ -146,20 +160,21 @@
         }
 
         function submitQuote() {
-            acfsubmintQuote();
-            multiFiles();
-            // var agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); acfsubmintQuote(); multiFiles(); return false;");
-            // var confirmPromptOptions = {
-            //     'modalPopupId': 'lightningInfoPopup',
-            //     'title': 'Confirm',
-            //     'message': 'Are you sure that you want to submit your Quote? Once you submit the quote you cannot edit it.',
-            //     'agreeButtonLabel': 'Yes',
+            // acfsubmintQuote();
+            // multiFiles();
+            // showPopup();
 
-            //     'discardButtonLabel': 'cancel',
-            //     'agreeFunction': agreeFunction
-            // }
-            // Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
+            var agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); acfsubmintQuote(); multiFiles(); return false;");
+            var confirmPromptOptions = {
+                'modalPopupId': 'lightningInfoPopup',
+                'title': 'Confirm',
+                'message': 'Are you sure that you want to submit your Quote? Once you submit the quote you cannot edit it.',
+                'agreeButtonLabel': 'Yes',
 
+                'discardButtonLabel': 'cancel',
+                'agreeFunction': agreeFunction
+            }
+            Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
 
         }
         function uploadDocument() {
@@ -287,8 +302,8 @@
         }
 
         function multiFiles() {
-            console.log('uploadFileData @@ ', { uploadFileData });
-            if (uploadFileData.length > 0) {
+            if (uploadFileData != undefined && uploadFileData.length > 0) {
+                console.log('uploadFileData @@ ', { uploadFileData });
                 var fileData = uploadFileData[0];
                 var reader = new FileReader();
                 reader.onload = multiFilesLoad;
@@ -424,7 +439,87 @@
 
 
     </script>
+
+    <div class="slds-scope">
+        <div id="spinner" class="slds-spinner_container" >
+
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('spinner').className += ' slds-hide';
+
+
+        function submintQuoteFunction(){
+            console.log('submintQuoteFunction');
+            acfsubmintQuote();
+            document.getElementById('modalId').className += ' slds-hide';
+            // closePopupModal();
+            // setTimeout(
+            //     function(){
+            //         window.location.reload();
+            //     }, 5000
+            // );
+        }
+    </script>
+
+    <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:11px;
+            position: absolute;
+            width: 600px;
+            margin-left: -240px;
+            top:40vh;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+    </style>
+
+
+    <apex:form >
+
+        <apex:actionFunction name="showPopup" action="{!showPopup}" />
+
+        <div id="modalId">
+            <apex:outputPanel id="tstpopup">
+                <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+                <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+                    Are you sure that you want to submit your Quote? Once you submit the quote you cannot edit it.
+                    <!-- <apex:commandButton value="Yes" action="{!submintQuote}" rerender="tstpopup" oncomplete="window.top.location.reload()"/>  -->
+                    <apex:commandButton value="Yes" onclick="submintQuoteFunction();" rerender="tstpopup"/>
+                    <apex:commandButton value="Cancel" action="{!closePopup}" rerender="tstpopup"/>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </div>
+
+    </apex:form>
+
     <apex:form id="form" html-autocomplete="off">
+
+        <apex:actionFunction name="closePopupModal" action="{!closePopup}" status="splashStatus" rerender="form,iserrorMessage" />
 
         <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
 
@@ -486,7 +581,7 @@
         </apex:outputPanel>
         <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 50px;">
 
-            <apex:outputPanel>
+            <apex:outputPanel >
                 <apex:pagemessages id="pageLoadErrorMessage" />
                 <script>
                 </script>
@@ -553,6 +648,7 @@
 
                             <apex:outputField value="{!rfqToVendor.buildertek__Submitted_Date__c}"
                                 rendered="{!rfqToVendor.buildertek__Status__c == 'Quote Submitted'}" />
+
                         </apex:pageBlockSection>
                     </div>
                     <br />
@@ -604,8 +700,7 @@
                                             <apex:outputField value="{!item.buildertek__Quantity__c}"
                                                 style="width:100px;"
                                                 rendered="{!rfqToVendor.buildertek__Status__c == 'Quote Submitted' || rfqToVendor.buildertek__Status__c == 'Awarded' || rfqToVendor.buildertek__Status__c == 'Accepted'}" />
-                                            <apex:outputPanel
-                                                rendered="{!rfqToVendor.buildertek__Status__c != 'Quote Submitted' && rfqToVendor.buildertek__Status__c != 'Awarded' && rfqToVendor.buildertek__Status__c != 'Accepted'}">
+                                            <apex:outputPanel rendered="{!rfqToVendor.buildertek__Status__c != 'Quote Submitted' && rfqToVendor.buildertek__Status__c != 'Awarded' && rfqToVendor.buildertek__Status__c != 'Accepted'}">
                                                 <span class="slds-required" title="required">* </span>
                                                 <apex:inputField value="{!item.buildertek__Quantity__c}"
                                                     onkeypress="return inputLimiter1(event,'Numbers');"
@@ -618,8 +713,7 @@
                                             <apex:outputField value="{!item.buildertek__Unit_Price__c}"
                                                 styleClass="slds-input" style="width:100px;"
                                                 rendered="{!rfqToVendor.buildertek__Status__c == 'Quote Submitted' || rfqToVendor.buildertek__Status__c == 'Awarded' || rfqToVendor.buildertek__Status__c == 'Accepted'}" />
-                                            <apex:outputPanel
-                                                rendered="{!rfqToVendor.buildertek__Status__c != 'Quote Submitted' && rfqToVendor.buildertek__Status__c != 'Awarded' && rfqToVendor.buildertek__Status__c != 'Accepted'}">
+                                            <apex:outputPanel rendered="{!rfqToVendor.buildertek__Status__c != 'Quote Submitted' && rfqToVendor.buildertek__Status__c != 'Awarded' && rfqToVendor.buildertek__Status__c != 'Accepted'}">
                                                 <span class="slds-required" title="required">* </span>
                                                 <apex:inputField value="{!item.buildertek__Unit_Price__c}"
                                                     onkeypress="return inputLimiter1(event,'Currency');"
@@ -631,8 +725,7 @@
                                             <apex:outputField value="{!item.buildertek__Estimated_Work_Days__c}"
                                                 style="width:100px;"
                                                 rendered="{!rfqToVendor.buildertek__Status__c == 'Quote Submitted' || rfqToVendor.buildertek__Status__c == 'Awarded' || rfqToVendor.buildertek__Status__c == 'Accepted'}" />
-                                            <apex:outputPanel
-                                                rendered="{!rfqToVendor.buildertek__Status__c != 'Quote Submitted' && rfqToVendor.buildertek__Status__c != 'Awarded' && rfqToVendor.buildertek__Status__c != 'Accepted'}">
+                                            <apex:outputPanel rendered="{!rfqToVendor.buildertek__Status__c != 'Quote Submitted' && rfqToVendor.buildertek__Status__c != 'Awarded' && rfqToVendor.buildertek__Status__c != 'Accepted'}">
                                                 <span class="" title=""> </span>
                                                 <apex:inputField value="{!item.buildertek__Estimated_Work_Days__c}"
                                                     onkeypress="return inputLimiter1(event,'Numbers');"
@@ -678,8 +771,7 @@
                                                 styleClass="slds-input" style="width:100px;" />
                                         </td>
                                         <td>
-                                            <apex:inputField
-                                                value="{!eachRecord.record.buildertek__Estimated_Work_Days__c}"
+                                            <apex:inputField value="{!eachRecord.record.buildertek__Estimated_Work_Days__c}"
                                                 onkeypress="return inputLimiter1(event,'Numbers');"
                                                 styleClass="slds-input" style="width:100px;" />
                                         </td>
@@ -688,8 +780,7 @@
                                                 styleClass="slds-input" />
                                         </td>
                                         <td>
-                                            <apex:commandLink
-                                                styleclass="slds-button slds-button_neutral slds-m-top--small"
+                                            <apex:commandLink styleclass="slds-button slds-button_neutral slds-m-top--small"
                                                 title="Delete" rerender="form" value="X" action="{!removeRowFromList}"
                                                 Status="status" immediate="true">
                                                 <apex:param value="{!rowNum}" name="rowToRemove"
@@ -771,7 +862,7 @@
                             onclick="submitQuote();">Submit</button>
                     </center>
                     <!--  </div>-->
-                    <apex:actionRegion>
+                    <apex:actionRegion >
                         <apex:actionFunction name="acfRefreshFiles" action="{!refreshFiles}" status="splashStatus"
                             rerender="pb2" />
                         <apex:actionFunction name="acCreateRFI" action="{!createRFI}" />
@@ -835,8 +926,8 @@
                 </div>
                 <div class="slds-modal__content" style="width:633px;">
 
-                    <apex:pageBlock>
-                        <apex:pageBlockSection>
+                    <apex:pageBlock >
+                        <apex:pageBlockSection >
                             <table width="100%" class="slds-table slds-table_bordered slds-table_cell-buffer">
                                 <tbody>
                                     <tr>
@@ -911,8 +1002,5 @@
         </div>
 
     </apex:form>
-
-
-
 
 </apex:page>
